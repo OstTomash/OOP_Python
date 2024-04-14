@@ -11,7 +11,7 @@ class User(Person):
             name (str): The name of the user.
         """
         self.name = name
-        self.borrowed_books = {}
+        self._borrowed_books = {}
         self.__user_id = self.generate_user_id()
 
     def get_information(self):
@@ -20,7 +20,7 @@ class User(Person):
         Returns:
             str: A string containing the user's name and a list of borrowed books.
         """
-        return f'Name: {self.name}, Borrowed books: {self.borrowed_books}'
+        return f'Name: {self.name}, Borrowed books: {self._borrowed_books}'
 
     def take_book(self, book, library):
         """The user borrows a book from the library.
@@ -32,7 +32,7 @@ class User(Person):
         book_isbn = book.get_isbn()
 
         if library.get_specific_book(book, self):
-            self.borrowed_books[library.get_library_name()] = book_isbn
+            self._borrowed_books[library.library_name] = book_isbn
 
     def return_book(self, book, library):
         """The user returns a book to the library.
@@ -44,15 +44,15 @@ class User(Person):
         library.add_book(book, user_id=self.__user_id)
         should_remove = False
 
-        for library_name in self.borrowed_books.items():
+        for library_name in self._borrowed_books.items():
             if (
-                    library_name == library.get_library_name() and
-                    self.borrowed_books[library_name] == book.get_isbn()
+                    library_name == library.library_name and
+                    self._borrowed_books[library_name] == book.get_isbn()
             ):
                 should_remove = True
 
         if should_remove:
-            del self.borrowed_books[library.get_library_name()]
+            del self._borrowed_books[library.library_name]
 
     def add_borrowed_book(self, library, book):
         """Adds a borrowed book to the user's borrowed books list.
@@ -61,7 +61,7 @@ class User(Person):
             library: The library from which the book was borrowed.
             book: The book that was borrowed.
         """
-        self.borrowed_books[library.get_library_name()] = book.get_isbn()
+        self._borrowed_books[library.library_name] = book.get_isbn()
 
     def get_user_id(self):
         """Returns the user's unique ID.

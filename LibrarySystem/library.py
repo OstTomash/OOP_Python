@@ -13,18 +13,10 @@ class Library:
         """
         self.library_name = library_name
         self.books = {}
-        self.users = {}
-        self.borrowed_books = {}
+        self._users = {}
+        self.__borrowed_books = {}
 
         Library.libraries.append(self)
-
-    def get_library_name(self):
-        """Returns the name of the library.
-
-        Returns:
-            str: The name of the library.
-        """
-        return self.library_name
 
     def register_user(self, user):
         """Registers a new user with the library.
@@ -40,7 +32,7 @@ class Library:
 
         user_id = user.get_user_id()
 
-        self.users[user_id] = user
+        self._users[user_id] = user
 
     def add_book(self, book, amount_copies=0, user_id=''):
         """Adds a book to the library's inventory or returns a borrowed book.
@@ -55,11 +47,11 @@ class Library:
         """
         book_isbn = book.get_isbn()
 
-        if user_id in self.borrowed_books and book_isbn in self.borrowed_books[user_id]:
-            self.borrowed_books[user_id].remove(book_isbn)
+        if user_id in self.__borrowed_books and book_isbn in self.__borrowed_books[user_id]:
+            self.__borrowed_books[user_id].remove(book_isbn)
 
-            if len(self.borrowed_books[user_id]) == 0:
-                del self.borrowed_books[user_id]
+            if len(self.__borrowed_books[user_id]) == 0:
+                del self.__borrowed_books[user_id]
 
         if book_isbn in self.books:
             self.books[book_isbn]['amount'] += 1
@@ -85,21 +77,13 @@ class Library:
         if self.books[book_id]['amount'] < 1:
             raise ValueError('No such book')
 
-        if user_id not in self.users:
+        if user_id not in self._users:
             raise ValueError('Before you can take a book, you must register with us')
 
         self.books[book_id]['amount'] -= 1
-        self.borrowed_books[user_id] = [book_id]
+        self.__borrowed_books[user_id] = [book_id]
         user.add_borrowed_book(self, book)
         return True
-
-    def get_all_books(self):
-        """Returns all books in the library.
-
-        Returns:
-            dict: A dictionary containing all books and their details in the library.
-        """
-        return self.books
 
     def delete_book(self, book_id):
         """Deletes a book from the library's inventory.
@@ -114,7 +98,7 @@ class Library:
         if book_id not in self.books:
             raise ValueError("We cannot delete a book that doesn't exist")
 
-        for _, books in self.borrowed_books.items():
+        for _, books in self.__borrowed_books.items():
             if book_id in books:
                 raise ValueError('We cannot remove books until the user returns them')
 

@@ -26,7 +26,7 @@ class Employee(User):
             str: A formatted string containing the employee's name, place of work, and salary.
         """
         return (f'Name: {self.name}\n'
-                f'Works at {self.library.get_library_name()}\n'
+                f'Works at {self.library.library_name}\n'
                 f'Salary: {self.__salary}')
 
     def add_book(self, book, amount_copies):
@@ -47,7 +47,7 @@ class Employee(User):
         if amount_copies <= 0:
             raise ValueError("You should add at least one book")
 
-        if amount_copies > book.get_amount_copies():
+        if amount_copies > book.copies:
             raise ValueError("You cannot add more books than there are copies.")
 
         user_id = self.get_user_id()

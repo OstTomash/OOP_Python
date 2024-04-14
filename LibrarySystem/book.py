@@ -34,13 +34,11 @@ class Book:
         libraries = Library.get_all_libraries()
 
         for library in libraries:
-            available_books = library.get_all_books()
+            if not library.books[self._isbn]:
+                return f"{library.library_name}: Not available"
 
-            if not available_books[self._isbn]:
-                return f"{library.get_library_name()}: Not available"
-
-            return (f'This book is available in {library.get_library_name()}'
-                    f'in quantity {available_books[self._isbn]['amount']}')
+            return (f'This book is available in {library.library_name}'
+                    f'in quantity {library.books[self._isbn]['amount']}')
 
     def update_copies_in_library(self, amount=1):
         """Updates the number of copies of the book in the library.
@@ -73,14 +71,6 @@ class Book:
             str: The ISBN of the book.
         """
         return self._isbn
-
-    def get_amount_copies(self):
-        """Returns the number of copies of the book.
-
-        Returns:
-            int: The number of copies of the book.
-        """
-        return self.copies
 
     @staticmethod
     def validate_isbn(isbn):
